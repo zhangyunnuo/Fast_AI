@@ -1,6 +1,5 @@
 from openai import OpenAI
-from time import time
-
+import time
 client = OpenAI(
     # defaults to os.environ.get("OPENAI_API_KEY")
     api_key="sk-vSNSmOgCwAtIPfc8G0PVh1skulT6ZbEcJj96DjpVIfk0pJNE",
@@ -43,9 +42,9 @@ def gpt_35_api_stream(messages: list):
     )
     try:
       for chunk in stream:
-          #if (chunk.choices[0],delta.content != None):
+          if chunk.choices[0].delta.content is not None:
             print_color(chunk.choices[0].delta.content,"blue")
-            #sleep(0.1)
+            time.sleep(0.2)
     except IndexError:
         pass
 
@@ -53,9 +52,10 @@ def gpt_35_api_stream(messages: list):
 if __name__ == '__main__':
     while 1:
         user_massage = input()
-        if (user_massage == "$"):
+        if user_massage == "$":
             while user_massage == "$":
                 user_massage = user_massage + input()
+        user_massage = user_massage[0:-1]
         messages = [{'role': 'user','content': user_massage},]
         # 非流式调用
         # gpt_35_api(messages)
