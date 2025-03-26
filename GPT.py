@@ -17,15 +17,10 @@ if API_KEY == 1:
         }
         json.dump(user_data,f)
 
-# 检测是否有API（我不提供，跑了 :))))))) ）
-
 client = OpenAI(
     api_key = API_KEY,
     base_url = "https://api.chatanywhere.tech/v1"
 )
-
-
-
 
 def print_color(text, color):
     color_codes = {
@@ -33,9 +28,7 @@ def print_color(text, color):
         "magenta": "35", "cyan": "36", "white": "37"
     }
     color_code = color_codes.get(color.lower(), "37")
-    print(f"\033[{color_code}m{text}\033[0m",end = "")
-
-
+    print(f"\033[{color_code}m{text}\033[0m", end="")
 
 # 非流式响应
 def gpt_35_api(messages: list):
@@ -46,6 +39,7 @@ def gpt_35_api(messages: list):
     """
     completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
     print(completion.choices[0].message.content)
+    return completion.choices[0].message  # 返回AI的回答以添加到对话历史中
 
 def gpt_35_api_stream(messages: list):
     """为提供的对话消息创建新的回答 (流式传输)
@@ -58,27 +52,36 @@ def gpt_35_api_stream(messages: list):
         messages=messages,
         stream=True,
     )
+    response_content = ""
     try:
-      for chunk in stream:
-          if chunk.choices[0].delta.content is not None:
-            print_color(chunk.choices[0].delta.content,"blue")
-            time.sleep(0.2)
+        for chunk in stream:
+            if chunk.choices[0].delta.content is not None:
+                response_content += chunk.choices[0].delta.content
+                print_color(chunk.choices[0].delta.content, "blue")
+                time.sleep(0.2)
+        return {"role": "assistant", "content": response_content}  # 返回AI的回答以添加到对话历史中
     except IndexError:
         pass
 
-
 if __name__ == '__main__':
-    while 1:
+    conversation_history = []  # 初始化对话历史
+
+    while True:
         user_massage = input()
         if user_massage == "$":
             user_massage = ""
-            while user_massage == "~":
+            while user_massage != "~":
                 s = input()
                 user_massage = user_massage + s
-        user_massage = user_massage[0:-1]
-        messages = [{'role': 'user','content': user_massage},]
-        # 非流式调用
-        # gpt_35_api(messages)
-        # 流式调
-        gpt_35_api_stream(messages)
+        if user_massage.endswith("~"):
+            user_massage = user_massage[:-1]
+
+        # 将用户的消息添加到对话历史中
+        conversation_history.append({'role': 'user', 'content': user_massage})
+
+        # 调用流式API并获取AI的回答
+        response = gpt_35_api_stream(conversation_history)
+        if response:
+            conversation_history.append(response)  # 将AI的回答添加到对话历史中
+
         print()
