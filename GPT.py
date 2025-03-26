@@ -1,9 +1,27 @@
-from openai import OpenAI
+from openai import OpenAI, api_key
 import time
+import json
+
+with open('user_data.json', 'r') as f:
+    user_data = json.load(f)
+
+API_KEY = user_data["api_key"]
+
+# print(API_KEY) 测试
+
+if API_KEY == 1:
+    API_KEY = input("请输入你的API\n")
+    with open('user_data.json', 'w') as f:
+        user_data = {
+            "api_key" : API_KEY
+        }
+        json.dump(user_data,f)
+
+# 检测是否有API（我不提供，跑了 :))))))) ）
+
 client = OpenAI(
-    # defaults to os.environ.get("OPENAI_API_KEY")
-    api_key="sk-vSNSmOgCwAtIPfc8G0PVh1skulT6ZbEcJj96DjpVIfk0pJNE",
-    base_url="https://api.chatanywhere.tech/v1"
+    api_key = API_KEY,
+    base_url = "https://api.chatanywhere.tech/v1"
 )
 
 
@@ -53,8 +71,10 @@ if __name__ == '__main__':
     while 1:
         user_massage = input()
         if user_massage == "$":
-            while user_massage == "$":
-                user_massage = user_massage + input()
+            user_massage = ""
+            while user_massage == "~":
+                s = input()
+                user_massage = user_massage + s
         user_massage = user_massage[0:-1]
         messages = [{'role': 'user','content': user_massage},]
         # 非流式调用
