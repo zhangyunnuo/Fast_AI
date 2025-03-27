@@ -1,6 +1,7 @@
 from openai import OpenAI, api_key
 import time
 import json
+import speech_recognition as sr
 
 with open('user_data.json', 'r') as f:
     user_data = json.load(f)
@@ -58,15 +59,17 @@ def gpt_35_api_stream(messages: list):
             if chunk.choices[0].delta.content is not None:
                 response_content += chunk.choices[0].delta.content
                 print_color(chunk.choices[0].delta.content, "blue")
-                time.sleep(0.2)
+                #time.sleep(0.2)
         return {"role": "assistant", "content": response_content}  # 返回AI的回答以添加到对话历史中
     except IndexError:
         pass
 
 if __name__ == '__main__':
     conversation_history = []  # 初始化对话历史
+    recognizer = sr.Recognizer()
 
     while True:
+        user_massage = ""
         user_massage = input()
         if user_massage == "$":
             user_massage = ""
@@ -75,7 +78,6 @@ if __name__ == '__main__':
                 user_massage = user_massage + s
         if user_massage.endswith("~"):
             user_massage = user_massage[:-1]
-
         # 将用户的消息添加到对话历史中
         conversation_history.append({'role': 'user', 'content': user_massage})
 
