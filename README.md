@@ -24,7 +24,7 @@
 git clone https://github.com/zhangyunnuo/Fast-AI.git
 ```
 
->#### 运行GPT.py，进入后输入API Key，回车，即可开始聊天
+>#### 运行GPT.py（别问我为什么不是main.py，因为我现在只写了GPT3.5），进入后输入API Key，回车，即可开始聊天
 > ###### 你知道的，我不会给你API Key，勤快点，自己去申请一个
 
 
