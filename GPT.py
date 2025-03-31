@@ -71,13 +71,6 @@ if __name__ == '__main__':
     while True:
         user_massage = ""
         user_massage = input()
-        if user_massage == "$":
-            user_massage = ""
-            while user_massage != "~":
-                s = input()
-                user_massage = user_massage + s
-        if user_massage.endswith("~"):
-            user_massage = user_massage[:-1]
         # 将用户的消息添加到对话历史中
         conversation_history.append({'role': 'user', 'content': user_massage})
 
